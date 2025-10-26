@@ -7,12 +7,12 @@ import time
 from typing import Any, Literal
 
 import torch
-import wandb
 from composer.callbacks import CheckpointSaver
 from composer.core import Callback, State, Time, Timestamp
 from composer.loggers import Logger
 from composer.utils import PartialFilePath, dist, get_save_filename
 
+import wandb
 from src.utils import (
     fsspec_exists,
     save_pretrained_or_push_to_hub,
