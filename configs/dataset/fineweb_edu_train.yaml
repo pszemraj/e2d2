@@ -1,0 +1,12 @@
+_target_: src.datasets.tokenize_on_demand.StreamingTextDataset
+split: "train"
+max_length: ${model.config.length}
+dataset_path: "HuggingFaceFW/fineweb-edu-score-2"
+config_name: "CC-MAIN-2024-10"  # Configurable snapshot
+padding: false
+add_special_tokens: true
+text_key: "text"
+truncate: true
+max_samples: null  # Set to integer to limit samples (e.g., 10000 for testing)
+shuffle_buffer_size: 10000
+shuffle_seed: 42
