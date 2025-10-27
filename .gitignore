@@ -7,3 +7,7 @@ __pycache__/
 .DS_Store
 outputs/
 watch_folder
+checkpoints/
+config.yaml
+config_tree.txt
+wandb/
