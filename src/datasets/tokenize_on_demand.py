@@ -3,7 +3,7 @@ import re
 from typing import Any, Dict, Literal
 
 import torch
-from torch.utils.data.dataset import Dataset
+from torch.utils.data.dataset import Dataset, IterableDataset
 from transformers import PreTrainedTokenizer
 
 from datasets import load_dataset
@@ -481,4 +481,101 @@ class WMTDataset(Dataset):
                 "input_ids": input_ids,
                 "attention_mask": attention_mask,
                 "context_mask": context_mask,
+            }
+
+
+class StreamingTextDataset(IterableDataset):
+    """Streaming dataset for text/language modeling tasks.
+
+    Supports large-scale datasets like FineWeb-Edu by streaming without
+    loading the full dataset into memory. Each sample is tokenized on-the-fly.
+    """
+
+    def __init__(
+        self,
+        tokenizer: PreTrainedTokenizer,
+        dataset_path: str,
+        split: str,
+        max_length: int,
+        config_name: str | None = None,
+        padding: bool = False,
+        add_special_tokens: bool = True,
+        text_key: str = "text",
+        truncate: bool = True,
+        max_samples: int | None = None,
+        shuffle_buffer_size: int = 10000,
+        shuffle_seed: int = 42,
+        **_: Dict[str, Any],
+    ):
+        """Initialize streaming text dataset.
+
+        Args:
+            tokenizer: HuggingFace tokenizer
+            dataset_path: HuggingFace dataset path (e.g., "HuggingFaceFW/fineweb-edu-score-2")
+            split: Dataset split ("train", "validation", "test")
+            max_length: Maximum sequence length
+            config_name: Dataset config/snapshot name (e.g., "CC-MAIN-2024-10")
+            padding: Whether to pad sequences
+            add_special_tokens: Whether to add BOS/EOS tokens
+            text_key: Key for text field in dataset (default: "text")
+            truncate: Whether to truncate sequences
+            max_samples: Optional limit on number of samples to yield
+            shuffle_buffer_size: Size of shuffle buffer (0 to disable)
+            shuffle_seed: Random seed for shuffling
+        """
+        self.tokenizer = tokenizer
+        self.max_length = max_length
+        self.padding = padding
+        self.add_special_tokens = add_special_tokens
+        self.text_key = text_key
+        self.truncate = truncate
+        self.max_samples = max_samples
+        self.shuffle_buffer_size = shuffle_buffer_size
+        self.shuffle_seed = shuffle_seed
+
+        # Load dataset in streaming mode
+        self.dataset = load_dataset(
+            dataset_path,
+            name=config_name,
+            split=split,
+            streaming=True,
+        )
+
+        # Apply shuffling if requested
+        if self.shuffle_buffer_size > 0:
+            self.dataset = self.dataset.shuffle(
+                buffer_size=shuffle_buffer_size,
+                seed=shuffle_seed,
+            )
+
+    def __iter__(self):
+        """Iterate over streaming dataset."""
+        count = 0
+        for example in self.dataset:
+            if self.max_samples is not None and count >= self.max_samples:
+                break
+
+            text = example[self.text_key]
+
+            # Add special tokens if requested
+            if self.add_special_tokens:
+                text = self.tokenizer.bos_token + text + self.tokenizer.eos_token
+
+            # Tokenize
+            tokenized = self.tokenizer(
+                text,
+                max_length=self.max_length,
+                padding="max_length" if self.padding else False,
+                add_special_tokens=False,  # Already added manually if needed
+                truncation=self.truncate,
+                return_tensors="pt",
+            )
+
+            input_ids = tokenized["input_ids"].squeeze(0)
+            attention_mask = tokenized["attention_mask"].squeeze(0)
+
+            count += 1
+            yield {
+                "input_ids": input_ids,
+                "attention_mask": attention_mask,
             }
