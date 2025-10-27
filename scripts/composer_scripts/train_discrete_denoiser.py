@@ -76,7 +76,13 @@ def main(cfg: DictConfig) -> None:
         cfg.train_dataset,
         tokenizer=tokenizer,
     )
-    train_sampler = dist.get_sampler(train_dataset, shuffle=True, drop_last=True)
+    # For IterableDataset, no sampler is needed
+    from torch.utils.data import IterableDataset
+    if isinstance(train_dataset, IterableDataset):
+        train_sampler = None
+    else:
+        train_sampler = dist.get_sampler(train_dataset, shuffle=True, drop_last=True)
+
     train_dataloader = hydra.utils.instantiate(
         cfg.train_dataloader,
         _convert_="partial",
