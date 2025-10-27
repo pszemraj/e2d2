@@ -511,7 +511,8 @@ class StreamingTextDataset(IterableDataset):
 
         Args:
             tokenizer: HuggingFace tokenizer
-            dataset_path: HuggingFace dataset path (e.g., "HuggingFaceFW/fineweb-edu-score-2")
+            dataset_path: HuggingFace dataset path
+                (e.g., "HuggingFaceFW/fineweb-edu-score-2")
             split: Dataset split ("train", "validation", "test")
             max_length: Maximum sequence length
             config_name: Dataset config/snapshot name (e.g., "CC-MAIN-2024-10")
