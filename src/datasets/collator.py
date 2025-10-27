@@ -83,7 +83,10 @@ class DenoisingCollator:
                 end=t_index[1] * num_blocks,
                 device=device,
             ) / (global_batch_size * num_blocks)
-            offset = offset.view(batch_size, num_blocks)
+            if self.block_size is not None and self.block_size > 0:
+                offset = offset.view(batch_size, num_blocks)
+            else:
+                offset = offset.view(batch_size)
             _eps_t = (_eps_t / (global_batch_size * num_blocks) + offset) % 1
         t = (1 - self.sampling_eps) * _eps_t + self.sampling_eps
         if self.restricted_t_range is not None:
