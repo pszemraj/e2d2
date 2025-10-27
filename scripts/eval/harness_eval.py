@@ -17,11 +17,7 @@ from lm_eval.loggers.evaluation_tracker import EvaluationTracker
 from lm_eval.utils import make_table
 from omegaconf import DictConfig
 from tqdm import tqdm
-from transformers import (
-    AutoModelForCausalLM,
-    AutoModelForMaskedLM,
-    PreTrainedTokenizer,
-)
+from transformers import AutoModelForCausalLM, AutoModelForMaskedLM, PreTrainedTokenizer
 
 from datasets import Dataset
 from scripts.utils import (

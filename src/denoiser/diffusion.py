@@ -21,12 +21,7 @@ except ImportError:
     BlockMask, and_masks, create_block_mask = None, None, None
 
 
-from src.denoiser.base import (
-    Denoiser,
-    DenoiserConfig,
-    DenoiserInput,
-    LossAndNllOutput,
-)
+from src.denoiser.base import Denoiser, DenoiserConfig, DenoiserInput, LossAndNllOutput
 
 
 def create_attn_mask(attn_mask):
