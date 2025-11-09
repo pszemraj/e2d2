@@ -27,6 +27,9 @@ from src.denoiser.base import (
     DenoiserInput,
     LossAndNllOutput,
 )
+from src.logging_config import get_logger
+
+logger = get_logger(__name__)
 
 
 def create_attn_mask(attn_mask):
@@ -650,7 +653,9 @@ class D3PM(Denoiser):
                 + ((block_id + 1) * block_size),
             ] = xt
             if tokenizer is not None:  # Useful for debugging
-                print(tokenizer.batch_decode(accumulated_samples))
+                logger.debug(
+                    "Decoded samples: %s", tokenizer.batch_decode(accumulated_samples)
+                )
             if stopping_criteria is not None:
                 is_done = stopping_criteria(
                     input_ids=accumulated_samples[  # type: ignore

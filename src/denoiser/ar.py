@@ -17,6 +17,9 @@ from src.denoiser.base import (
     DenoiserInput,
     LossAndNllOutput,
 )
+from src.logging_config import get_logger
+
+logger = get_logger(__name__)
 
 
 class ARConfig(DenoiserConfig):
@@ -154,6 +157,6 @@ class AR(Denoiser):
         )
 
         if tokenizer is not None:
-            print(tokenizer.batch_decode(outputs))
+            logger.debug("Decoded outputs: %s", tokenizer.batch_decode(outputs))
         # Decode output
         return outputs
