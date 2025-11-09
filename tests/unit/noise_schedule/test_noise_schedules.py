@@ -89,9 +89,9 @@ class TestNoiseBase:
 
         # Check that alpha_t is monotonically decreasing
         for i in range(len(alpha_t_values) - 1):
-            assert (
-                alpha_t_values[i] >= alpha_t_values[i + 1]
-            ), f"Non-monotonic at index {i}"
+            assert alpha_t_values[i] >= alpha_t_values[i + 1], (
+                f"Non-monotonic at index {i}"
+            )
 
 
 class TestLinearNoise(TestNoiseBase):
@@ -249,9 +249,7 @@ class TestLogarithmicNoise(TestNoiseBase):
         # Logarithmic should have faster initial noise accumulation
         # Check that alpha drops faster early on
         alpha_at_0_1, _ = noise_schedule(torch.tensor(0.1))
-        alpha_at_0_9, _ = noise_schedule(torch.tensor(0.9))
         drop_early = 1.0 - alpha_at_0_1
-        drop_late = alpha_at_0_1 - alpha_at_0_9
 
         # Early drop should be significant
         assert drop_early > 0.05

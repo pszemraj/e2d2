@@ -5,7 +5,7 @@ to ensure type safety and runtime validation throughout the codebase.
 """
 
 from enum import Enum
-from typing import Literal, Optional, Union
+from typing import Literal, Optional
 
 import torch
 from pydantic import BaseModel, ConfigDict, Field, field_validator
@@ -148,9 +148,7 @@ class DatasetConfig(BaseConfig):
             and v is None
             and info.field_name in ["source_lang", "target_lang"]
         ):
-            raise ValueError(
-                f"{info.field_name} is required for translation tasks"
-            )
+            raise ValueError(f"{info.field_name} is required for translation tasks")
         return v
 
 

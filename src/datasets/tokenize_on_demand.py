@@ -7,12 +7,16 @@ from torch.utils.data.dataset import Dataset
 from transformers import PreTrainedTokenizer
 
 from datasets import load_dataset
-
-_QUESTION_PREFIX = (
-    "Please reason step by step, and put your final answer within $\\boxed{}$. "
+from src.constants import (
+    QUESTION_PREFIX,
+    SUMMARY_PREFIX,
+    TRANSLATION_PREFIX_TEMPLATE,
 )
-_SUMMARY_PREFIX = "Please summarize the following text: "
-_TRANSLATION_PREFIX = "Translate the following text from {source} to {target}: "
+
+# Backward compatibility aliases
+_QUESTION_PREFIX = QUESTION_PREFIX
+_SUMMARY_PREFIX = SUMMARY_PREFIX
+_TRANSLATION_PREFIX = TRANSLATION_PREFIX_TEMPLATE
 
 
 class GSM8KDataset(Dataset):
